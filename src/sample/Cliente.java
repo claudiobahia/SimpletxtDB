@@ -3,14 +3,14 @@ package sample;
 public class Cliente {
     private String cellphoneNumber;
     private String userName;
-    private int planType;// 0 pré-pago colcoar crédito pra usar // 1 pós-pago pacote minutos
-    private int creditQuantity;
+    private int planType;//0 prepago
+    private int creditQuantityOrSeconds;//prepago
 
-    public Cliente(String cellphoneNumber, String userName, int planType, int creditQuantity) {
+    public Cliente(String cellphoneNumber, String userName, int creditQuantityOrSeconds, int planType) {
         this.cellphoneNumber = cellphoneNumber;
         this.userName = userName;
+        this.creditQuantityOrSeconds = creditQuantityOrSeconds;
         this.planType = planType;
-        this.creditQuantity = creditQuantity;
     }
 
     public String getCellphoneNumber() {
@@ -29,19 +29,19 @@ public class Cliente {
         this.userName = userName;
     }
 
+    public int getCreditQuantityOrSeconds() {
+        return creditQuantityOrSeconds;
+    }
+
+    public void setCreditQuantityOrSeconds(int creditQuantity) {
+        this.creditQuantityOrSeconds = creditQuantity;
+    }
+
     public int getPlanType() {
         return planType;
     }
 
     public void setPlanType(int planType) {
         this.planType = planType;
-    }
-
-    public int getCreditQuantity() {
-        return creditQuantity;
-    }
-
-    public void setCreditQuantity(int creditQuantity) {
-        this.creditQuantity = creditQuantity;
     }
 }

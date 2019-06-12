@@ -5,42 +5,55 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.Scanner;
 
 public class DAO {
     private Formatter formatter;
 
     public DAO() {
+    }
+
+    public void writeTxt(ArrayList<Cliente> clientes) {
         try {
-            this.formatter = new Formatter(new File("dao.txt"));
-        }catch (IOException e){
-            JOptionPane.showMessageDialog(null,e);
+            formatter = new Formatter(new File("dao.txt"));
+            for (Cliente cliente : clientes) {
+                formatter.format(cliente.getCellphoneNumber()+";"+ cliente.getUserName()+";"+
+                        cliente.getCreditQuantityOrSeconds() +";"+ cliente.getPlanType()+"\n");
+            }
+            formatter.close();
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "ERRO WRITE CRIAR FILE");
         }
     }
 
-    public void writeTxt(ArrayList<Cliente> clientes){
-
-    }
-
-
-
-    /*
-            ArrayList<Integer> papito = new ArrayList();
-        papito.add(1);
-        papito.add(2);
-        papito.add(33);
-        Formatter formatter = null;
-
+    public ArrayList readFile(ArrayList<Cliente> clientes) {
+        String linha;
+        Object[] stringVet;
+        Scanner scanner = null;
         try {
-            formatter = new Formatter(new File("dao.txt"));
-            for (int o : papito) {
-
-                formatter.format(o + "\n");
+            try {
+                scanner = new Scanner(new File("dao.txt"));
+            } catch (Exception e) {
+                System.out.println("Criou arquivo de texto");
+                new Formatter(new File("dao.txt"));
+                scanner = new Scanner(new File("dao.txt"));
             }
-            } catch(IOException e){
-                System.out.println(e);
+            try {
+                while (scanner.hasNext()) {
+                    linha = scanner.nextLine();
+                    stringVet = linha.split(";");
+                    Cliente cliente = new Cliente(stringVet[0].toString(), stringVet[1].toString(),
+                            Integer.parseInt(stringVet[2].toString()), Integer.parseInt(stringVet[3].toString()));
+                    clientes.add(cliente);
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Erro le arquivo" + e);
             }
-
-        formatter.close();
-     */
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Erro le arquivo new file");
+        }
+        scanner.close();
+        return clientes;
+    }
 
 }
