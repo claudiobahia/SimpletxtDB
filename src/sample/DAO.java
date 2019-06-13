@@ -1,59 +1,97 @@
 package sample;
 
-import javax.swing.*;
 import java.io.File;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.Scanner;
 
 public class DAO {
     private Formatter formatter;
+    private Scanner scanner;
 
     public DAO() {
     }
 
     public void writeTxt(ArrayList<Cliente> clientes) {
-        try {
-            formatter = new Formatter(new File("dao.txt"));
-            for (Cliente cliente : clientes) {
-                formatter.format(cliente.getCellphoneNumber()+";"+ cliente.getUserName()+";"+
-                        cliente.getCreditQuantityOrSeconds() +";"+ cliente.getPlanType()+"\n");
-            }
-            formatter.close();
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "ERRO WRITE CRIAR FILE");
+        formatter = createFileToWrite(formatter);
+        for (Cliente cliente : clientes) {
+            formatter.format("%s;%s;%d;%d\n", cliente.getCellphoneNumber(), cliente.getUserName(), cliente.getCreditQuantityOrSeconds(), cliente.getPlanType());
         }
+        close(formatter);
     }
 
-    public ArrayList readFile(ArrayList<Cliente> clientes) {
-        String linha;
-        Object[] stringVet;
-        Scanner scanner = null;
-        try {
-            try {
-                scanner = new Scanner(new File("dao.txt"));
-            } catch (Exception e) {
-                System.out.println("Criou arquivo de texto");
-                new Formatter(new File("dao.txt"));
-                scanner = new Scanner(new File("dao.txt"));
-            }
-            try {
-                while (scanner.hasNext()) {
-                    linha = scanner.nextLine();
-                    stringVet = linha.split(";");
-                    Cliente cliente = new Cliente(stringVet[0].toString(), stringVet[1].toString(),
-                            Integer.parseInt(stringVet[2].toString()), Integer.parseInt(stringVet[3].toString()));
-                    clientes.add(cliente);
-                }
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, "Erro le arquivo" + e);
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Erro le arquivo new file");
+    public ArrayList<Cliente> readFile(ArrayList<Cliente> clientes) {
+
+        if (isFile()) {
+            scanner = openFileToRead(scanner);
         }
-        scanner.close();
+        if (scanner != null) {
+            addTxtToClienteArrayList(clientes, scanner);
+        } else {
+            formatter = createFileToWrite(formatter);
+            scanner = openFileToRead(scanner);
+            addTxtToClienteArrayList(clientes, scanner);
+        }
+        close(scanner);
         return clientes;
     }
 
+    private void addTxtToClienteArrayList(ArrayList<Cliente> clientes, Scanner scanner) {
+        String linha;
+        Object[] stringVet;
+        while (scanner.hasNext()) {
+            linha = scanner.nextLine();
+            stringVet = linha.split(";");
+            Cliente cliente = new Cliente(stringVet[0].toString(), stringVet[1].toString(),
+                    Integer.parseInt(stringVet[2].toString()), Integer.parseInt(stringVet[3].toString()));
+            clientes.add(cliente);
+        }
+    }
+
+    private void close(Formatter formatter) {
+        try {
+            formatter.close();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void close(Scanner scanner) {
+        try {
+            scanner.close();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Formatter createFileToWrite(Formatter formatter) {
+        formatter = null;
+        try {
+            formatter = new Formatter(new File("dao.txt"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return formatter;
+    }
+
+    private boolean isFile() {
+        try {
+            new Scanner(new File("dao.txt"));
+            return true;
+        } catch (FileNotFoundException e) {
+            return false;
+        }
+    }
+
+    private Scanner openFileToRead(Scanner scanner) {
+        if (isFile()) {
+            try {
+                scanner = new Scanner(new File("dao.txt"));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        } else createFileToWrite(formatter);
+        return scanner;
+    }
 }

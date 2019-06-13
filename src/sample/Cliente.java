@@ -4,7 +4,8 @@ public class Cliente {
     private String cellphoneNumber;
     private String userName;
     private int planType;//0 prepago
-    private int creditQuantityOrSeconds;//prepago
+    private int creditQuantityOrSeconds;
+
 
     public Cliente(String cellphoneNumber, String userName, int creditQuantityOrSeconds, int planType) {
         this.cellphoneNumber = cellphoneNumber;
@@ -29,19 +30,29 @@ public class Cliente {
         this.userName = userName;
     }
 
-    public int getCreditQuantityOrSeconds() {
-        return creditQuantityOrSeconds;
-    }
-
-    public void setCreditQuantityOrSeconds(int creditQuantity) {
-        this.creditQuantityOrSeconds = creditQuantity;
-    }
-
     public int getPlanType() {
         return planType;
     }
 
     public void setPlanType(int planType) {
         this.planType = planType;
+    }
+
+    public int getCreditQuantityOrSeconds() {
+        return creditQuantityOrSeconds;
+    }
+
+    public void setCreditQuantityOrSeconds(int creditQuantityOrSeconds) {
+        this.creditQuantityOrSeconds = creditQuantityOrSeconds;
+    }
+
+    @Override
+    public String toString() {
+        String plano = (getPlanType() == 0)? "Pré-pago":"Pós-pago";
+        String creditMinute = (plano.equals("Pré-pago")) ? "Créditos: "+getCreditQuantityOrSeconds() :
+                "Segundos utilizados: " + getCreditQuantityOrSeconds();
+        return "Nome: "+getUserName()+"\n"+
+                "Número: "+getCellphoneNumber()+"\n"+
+                "Plano: "+plano+"\n"+ creditMinute;
     }
 }
