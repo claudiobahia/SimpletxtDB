@@ -159,7 +159,7 @@ public class Main {
     private static void excludeMethod(Swing swing, ArrayList<Cliente> clienteArrayList) {
         boolean ok = false;
         do {
-            String numberToCheck = showSimpleInput(listAllUsers(clienteArrayList)+
+            String numberToCheck = showSimpleInput(listAllUsers(clienteArrayList) +
                     "\nEntre com o número que deseja excluir os dados.\nSomente a numeração");
             boolean achou = returnEqualClienteBoolean(clienteArrayList, numberToCheck);
             Cliente cliente = returnEqualCliente(clienteArrayList, numberToCheck);
@@ -215,7 +215,7 @@ public class Main {
             for (Cliente cliente1 : clienteArrayList) {
                 if (cliente.getPlanType() == 0 && cliente1.getPlanType() == 0 &&
                         cliente.getCreditQuantityOrSeconds() >= cliente1.getCreditQuantityOrSeconds()) {
-                    string = "Cliente com maior crédito\n\n"+cliente.toString();
+                    string = "Cliente com maior crédito\n\n" + cliente.toString();
                 }
             }
         }

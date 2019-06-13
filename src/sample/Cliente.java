@@ -18,10 +18,6 @@ public class Cliente {
         return cellphoneNumber;
     }
 
-    public void setCellphoneNumber(String cellphoneNumber) {
-        this.cellphoneNumber = cellphoneNumber;
-    }
-
     public String getUserName() {
         return userName;
     }
@@ -48,11 +44,11 @@ public class Cliente {
 
     @Override
     public String toString() {
-        String plano = (getPlanType() == 0)? "Pré-pago":"Pós-pago";
-        String creditMinute = (plano.equals("Pré-pago")) ? "Créditos: "+getCreditQuantityOrSeconds() :
+        String plano = (getPlanType() == 0) ? "Pré-pago" : "Pós-pago";
+        String creditMinute = (plano.equals("Pré-pago")) ? "Créditos: " + getCreditQuantityOrSeconds() :
                 "Segundos utilizados: " + getCreditQuantityOrSeconds();
-        return "Nome: "+getUserName()+"\n"+
-                "Número: "+getCellphoneNumber()+"\n"+
-                "Plano: "+plano+"\n"+ creditMinute;
+        return "Nome: " + getUserName() + "\n" +
+                "Número: " + getCellphoneNumber() + "\n" +
+                "Plano: " + plano + "\n" + creditMinute;
     }
 }

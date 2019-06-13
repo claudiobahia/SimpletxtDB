@@ -15,25 +15,25 @@ public class Data {
         this.calendar = Calendar.getInstance();
     }
 
-    public String getDate(){
-        atualizar();
+    public String getDate() {
+        refresh();
         return date.toString();
     }
 
-    public String getDatePlus(int minutos){
-        atualizar();
+    public String getDatePlus(int minutos) {
+        refresh();
         addMinutes(minutos);
         date = calendar.getTime();
         return date.toString();
     }
 
     public String getHour() {
-        atualizar();
+        refresh();
         return dateFormat.format(date);
     }
 
     public void addMinutes(int minutes) {
-        atualizar();
+        refresh();
         calendar.setTime(date);
         calendar.add(Calendar.MINUTE, minutes);
     }
@@ -43,7 +43,7 @@ public class Data {
         return dateFormat.format(date);
     }
 
-    public void atualizar(){
+    private void refresh() {
         this.date = new Date();
     }
 }

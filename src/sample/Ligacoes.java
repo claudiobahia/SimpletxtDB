@@ -14,9 +14,7 @@ public class Ligacoes {
     private String dataInicio;
     private String dataFim;
 
-    //todo ajeitar metodos etc
-
-    public Ligacoes(String nome, String numero, String dataInicio,String dataFim) {
+    public Ligacoes(String nome, String numero, String dataInicio, String dataFim) {
         this.nome = nome;
         this.numero = numero;
         this.dataInicio = dataInicio;
@@ -29,7 +27,7 @@ public class Ligacoes {
     public void writeTxt(ArrayList<Ligacoes> ligacoes) {
         formatter = createFileToWrite(formatter);
         for (Ligacoes ligacoes1 : ligacoes) {
-            formatter.format("%s;%s;%s;%s\n", ligacoes1.getNome(),ligacoes1.getNumero(),ligacoes1.getDataInicio(),ligacoes1.getDataFim());
+            formatter.format("%s;%s;%s;%s\n", ligacoes1.getNome(), ligacoes1.getNumero(), ligacoes1.getDataInicio(), ligacoes1.getDataFim());
         }
         close(formatter);
     }
@@ -56,7 +54,7 @@ public class Ligacoes {
         while (scanner.hasNext()) {
             linha = scanner.nextLine();
             stringVet = linha.split(";");
-            Ligacoes ligacoes1 = new Ligacoes(stringVet[0],stringVet[1],stringVet[2],stringVet[3]);
+            Ligacoes ligacoes1 = new Ligacoes(stringVet[0], stringVet[1], stringVet[2], stringVet[3]);
             ligacoes.add(ligacoes1);
         }
     }
