@@ -46,7 +46,7 @@ public class Cliente {
     public String toString() {
         String plano = (getPlanType() == 0) ? "Pré-pago" : "Pós-pago";
         String creditMinute = (plano.equals("Pré-pago")) ? "Créditos: " + getCreditQuantityOrSeconds() :
-                "Segundos utilizados: " + getCreditQuantityOrSeconds();
+                "Minutos utilizados: " + getCreditQuantityOrSeconds();
         return "Nome: " + getUserName() + "\n" +
                 "Número: " + getCellphoneNumber() + "\n" +
                 "Plano: " + plano + "\n" + creditMinute;
