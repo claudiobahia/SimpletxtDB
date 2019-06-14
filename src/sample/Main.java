@@ -47,7 +47,7 @@ public class Main {
 
     private static void makeCall(ArrayList<Ligacoes> ligacoesArrayList, ArrayList<Cliente> clienteArrayList, Data data) {
         String allUserString = listAllUsers(clienteArrayList);
-        if (!allUserString.equals(listAllUserEmpty())) {
+        if (!allUserString.equals(isListAllUserEmpty())) {
             String numero = showSimpleInput("Entre com o número do usuário\nque realizará a ligação:\n" + allUserString);
             for (Cliente cliente : clienteArrayList) {
                 if (cliente.getCellphoneNumber().equals(numero)) {
@@ -131,7 +131,7 @@ public class Main {
     private static void changeMethod(Swing swing, ArrayList<Cliente> clienteArrayList) {
         boolean achou;
         String allUserString = listAllUsers(clienteArrayList);
-        if (!allUserString.equals(listAllUserEmpty())) {
+        if (!allUserString.equals(isListAllUserEmpty())) {
             String numberToCheck = showSimpleInput(allUserString +
                     "\n\nEntre com o número que deseja alterar os dados.\nSomente a numeração");
             Cliente cliente = returnEqualCliente(clienteArrayList, numberToCheck);
@@ -151,7 +151,7 @@ public class Main {
 
     private static void excludeMethod(ArrayList<Cliente> clienteArrayList) {
         String allUserString = listAllUsers(clienteArrayList);
-        if (!listAllUsers(clienteArrayList).equals(listAllUserEmpty())) {
+        if (!listAllUsers(clienteArrayList).equals(isListAllUserEmpty())) {
             String numberToCheck = showSimpleInput(allUserString +
                     "\n\nEntre com o número que deseja excluir os dados.\nSomente a numeração");
             boolean achou = returnEqualClienteBoolean(clienteArrayList, numberToCheck);
@@ -189,7 +189,7 @@ public class Main {
                 stringBuilder.append("\n-------------------------------\n");
             }
         }
-        if (!listAllUsers(clienteArrayList).equals(listAllUserEmpty())) {
+        if (!listAllUsers(clienteArrayList).equals(isListAllUserEmpty())) {
             String numero = showSimpleInput(stringBuilder.toString());
             for (Cliente cliente : clienteArrayList) {
                 if (cliente.getCellphoneNumber().equals(numero)) {
@@ -225,7 +225,7 @@ public class Main {
         showMessage(stringBuilder.toString());
     }
 
-    private static String listAllUserEmpty() {
+    private static String isListAllUserEmpty() {
         return "NÃO HÁ CLIENTES CADASTRADOS.";
     }
 
@@ -236,7 +236,7 @@ public class Main {
         }
         if (stringBuilder != null) {
             return (stringBuilder.toString());
-        } else return listAllUserEmpty();
+        } else return isListAllUserEmpty();
     }
 
     private static void addToClienteArray(ArrayList<Cliente> clienteArrayList, String numero, String nome, int creditoOUminuto, int plano) {
