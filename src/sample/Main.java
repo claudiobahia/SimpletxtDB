@@ -8,20 +8,16 @@ public class Main {
 
         DAO dao = new DAO();
         Ligacoes ligacoes = new Ligacoes();
-        Data data = new Data();
         Swing swing = new Swing();
 
-        ArrayList<Ligacoes> ligacoesArrayList = new ArrayList<>();
-        ligacoesArrayList = ligacoes.readFile(ligacoesArrayList);
         ArrayList<Cliente> clienteArrayList = new ArrayList<>();
+
         clienteArrayList = dao.readFile(clienteArrayList);
 
         boolean sair = false;
         do {
             clearSwing(swing.getAllJTextFieldsVector());
             int choosedOption = showOptionMenu(swing.getMainMenu());
-            dao.writeTxt(clienteArrayList);
-            ligacoes.writeTxt(ligacoesArrayList);
             switch (choosedOption) {
                 case 0://Include user info
                     includeMethod(swing, clienteArrayList);
@@ -33,54 +29,14 @@ public class Main {
                     excludeMethod(clienteArrayList);
                     break;
                 case 3://Report info from user
-                    reportMethod(swing, clienteArrayList);
+                    reportMethod(swing, clienteArrayList, ligacoes);
                     break;
                 case 4://Make a call
-                    makeCall(ligacoesArrayList, clienteArrayList, data);
-                    break;
-                case 5://Exit button
                 case -1://Exit X
                     sair = true;
             }
+            dao.writeTxt(clienteArrayList);
         } while (!sair);
-    }
-
-    private static void makeCall(ArrayList<Ligacoes> ligacoesArrayList, ArrayList<Cliente> clienteArrayList, Data data) {
-        String allUserString = listAllUsers(clienteArrayList);
-        if (!allUserString.equals(isListAllUserEmpty())) {
-            String numero = showSimpleInput("Entre com o número do usuário\nque realizará a ligação:\n" + allUserString);
-            for (Cliente cliente : clienteArrayList) {
-                if (cliente.getCellphoneNumber().equals(numero)) {
-                    if (cliente.getPlanType() == 0) {//prepago
-                        try {
-                            String horaInicio = data.getHour();
-                            int minutos = (Integer.parseInt(showSimpleInput("Hora de início: " +
-                                    horaInicio + "\nQuantos minutos de ligação?")));
-                            data.addMinutes(minutos);
-                            String horaFim = data.getNewHour();
-                            showMessage("Início: " + horaInicio + "\nFim: " + horaFim);
-                            cliente.setCreditQuantityOrSeconds(cliente.getCreditQuantityOrSeconds() - minutos);
-                            addToLigacoesArray(ligacoesArrayList, cliente.getUserName(), cliente.getCellphoneNumber(), data.getDate(), data.getDatePlus(minutos));
-                        } catch (Exception e) {
-                            showMessage("Minutos inválidos");
-                        }
-                    }
-                } else {//pos pago
-                    try {
-                        String horaInicio = data.getHour();
-                        int minutos = (Integer.parseInt(showSimpleInput("Hora de início: " +
-                                horaInicio + "\nQuantos minutos de ligação?")));
-                        data.addMinutes(minutos);
-                        String horaFim = data.getNewHour();
-                        showMessage("Início: " + horaInicio + "\nFim: " + horaFim);
-                        cliente.setCreditQuantityOrSeconds(cliente.getCreditQuantityOrSeconds() + minutos);
-                        addToLigacoesArray(ligacoesArrayList, cliente.getUserName(), cliente.getCellphoneNumber(), data.getDate(), data.getDatePlus(minutos));
-                    } catch (Exception e) {
-                        showMessage("Minutos inválidos");
-                    }
-                }
-            }
-        }else showMessage("Não há clientes cadastrados.");
     }
 
     private static Cliente returnEqualCliente(ArrayList<Cliente> clienteArrayList, String numberToCheck) {
@@ -105,124 +61,164 @@ public class Main {
         return false;
     }
 
+    private static boolean validaTamNumero(String numero) {
+        return numero.length() == 8;
+    }
+
     private static void includeMethod(Swing swing, ArrayList<Cliente> clienteArrayList) {
         int planType;
-        boolean ok = false;
-        do {
-            showInputMenu(swing.getIncludeObjNameNumber());
-            boolean achouCliente = returnEqualClienteBoolean(clienteArrayList, swing.getNumberTxt().getText());
-            if (swing.getNumberTxt().getText().length() == 8 &&
-                    tryParse(swing.getNumberTxt().getText()) && !achouCliente) {
-                ok = true;
-            } else if (!achouCliente) {
-                showMessage("Número telefonico inválido.\n" +
-                        "Entre apenas com 8 números sem simbolos.");
-            } else showMessage("Cliente já existente.");
-        } while (!ok);
+        showInputMenu(swing.getIncludeObjNameNumber());
+        String numero = swing.getNumberTxt().getText();
+        boolean achouCliente = returnEqualClienteBoolean(clienteArrayList, numero);
+        if (!validaTamNumero(numero)) {
+            showMessage("Número telefonico inválido.\n" + "Entre apenas com 8 números sem simbolos.");
+            return;
+        }
+        if (achouCliente) {
+            showMessage("Número telefonico já existente!");
+            return;
+        }
+        if (!tryParse(numero)) {
+            showMessage("Número inválido.");
+            return;
+        }
         planType = showOptionMenu(swing.getPlanTypeButtons());
-        if (planType == 0) {//prepago
+        if (isPrePago(planType)) {//prepago
             showInputMenu(swing.getCreditObj());
+            String credito = swing.getCreditMinuteTxt().getText();
+            if (!tryParse(credito)) {
+                showMessage("Créditos inválidos.");
+                return;
+            }
+            if (!isCreditoValido(credito)) {
+                showMessage("Créditos negativos, inválido.");
+                return;
+            }
         } else {
             swing.setCreditMinuteTxt("0");
         }
         addToClienteArray(clienteArrayList, swing.getNumberTxt().getText(), swing.getNameTxt().getText(), Integer.parseInt(swing.getCreditMinuteTxt().getText()), planType);
     }
 
+    private static boolean isPrePago(int planType) {
+        return planType == 0;
+    }
+
     private static void changeMethod(Swing swing, ArrayList<Cliente> clienteArrayList) {
-        boolean achou;
         String allUserString = listAllUsers(clienteArrayList);
-        if (!allUserString.equals(isListAllUserEmpty())) {
-            String numberToCheck = showSimpleInput(allUserString +
-                    "\n\nEntre com o número que deseja alterar os dados.\nSomente a numeração");
-            Cliente cliente = returnEqualCliente(clienteArrayList, numberToCheck);
-            achou = returnEqualClienteBoolean(clienteArrayList, numberToCheck);
-            if (achou) {
-                cliente.setUserName(showSimpleInput("Entre com o novo nome do cliente:"));
-                int novoPlano = showOptionMenu(swing.getPlanTypeButtons());
-                cliente.setPlanType(novoPlano);
-                if (novoPlano == 0) {//prepago
-                    cliente.setCreditQuantityOrSeconds(Integer.parseInt(showSimpleInput("Entre com o novo crédito: ")));
-                } else {
-                    cliente.setCreditQuantityOrSeconds(Integer.parseInt(showSimpleInput("Entre com os minutos falados: ")));
-                }
-            } else showMessage("Não há cliente cadastrado com esse número.");
-        }else showMessage("Não há clientes cadastrados.");
+        if (allUserString.equals(isListAllUserEmpty())) {
+            showMessage("Não há clientes cadastrados.");
+
+        }
+        String numberToCheck = showSimpleInput(allUserString +
+                "\n\nEntre com o número que deseja alterar os dados.\nSomente a numeração");
+        if (numberToCheck == null) {
+            return;
+        }
+        Cliente cliente = returnEqualCliente(clienteArrayList, numberToCheck);
+        if (!returnEqualClienteBoolean(clienteArrayList, numberToCheck)) {
+            showMessage("Não há cliente cadastrado com esse número.");
+            return;
+        }
+        cliente.setUserName(showSimpleInput("Entre com o novo nome do cliente:"));
+        int novoPlano = showOptionMenu(swing.getPlanTypeButtons());
+        cliente.setPlanType(novoPlano);
+        String credito;
+        if (isPrePago(novoPlano)) {//prepago
+            credito = showSimpleInput("Usando apenas números e positivos,\nEntre com o novo crédito: ");
+            if (!isCreditoValido(credito)) {
+                showMessage("Créditos inválidos");
+                return;
+            }
+            cliente.setCreditQuantityOrSeconds(Integer.parseInt(credito));
+        } else {
+            credito = showSimpleInput("Usando apenas números e positivos,\nEntre com o novo crédito: ");
+            if (!isCreditoValido(credito)) {
+                showMessage("Créditos inválidos");
+                return;
+            }
+            cliente.setCreditQuantityOrSeconds(Integer.parseInt(credito));
+        }
     }
 
     private static void excludeMethod(ArrayList<Cliente> clienteArrayList) {
         String allUserString = listAllUsers(clienteArrayList);
-        if (!listAllUsers(clienteArrayList).equals(isListAllUserEmpty())) {
-            String numberToCheck = showSimpleInput(allUserString +
-                    "\n\nEntre com o número que deseja excluir os dados.\nSomente a numeração");
-            boolean achou = returnEqualClienteBoolean(clienteArrayList, numberToCheck);
-            if (achou) {
-                Cliente cliente = returnEqualCliente(clienteArrayList, numberToCheck);
-                clienteArrayList.remove(cliente);
-            } else showMessage("Não há cliente cadastrado com esse número.");
-        } else showMessage("Não há clientes cadastrados.");
+        if (allUserString.equals(isListAllUserEmpty())) {
+            showMessage("Não há clientes cadastrados.");
+            return;
+        }
+        String numberToCheck = showSimpleInput(allUserString +
+                "\n\nEntre com o número que deseja excluir os dados.\nSomente a numeração");
+        if (numberToCheck == null) {
+            return;
+        }
+        if (!returnEqualClienteBoolean(clienteArrayList, numberToCheck)) {
+            showMessage("Não há cliente cadastrado com esse número.");
+            return;
+        }
+        Cliente cliente = returnEqualCliente(clienteArrayList, numberToCheck);
+        clienteArrayList.remove(cliente);
     }
 
-    private static void reportMethod(Swing swing, ArrayList<Cliente> clienteArrayList) {
-        int choosedOption = showOptionMenu(swing.getReportMenu());
-        switch (choosedOption) {
-            case 0: //List users
-                showMessage(listAllUsers(clienteArrayList));
-                break;
-            case 1: // List null or negative credits
-                listNegativeNullCredits(clienteArrayList);
-                break;
-            case 2: // Biggest credit user
-                listMostCredit(clienteArrayList);
-                break;
-            case 3: // Generate billets
-                generateBills(clienteArrayList);
-                break;
-        }
-    }
-
-    private static void generateBills(ArrayList<Cliente> clienteArrayList) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Entre com o número do cliente\nque deseja gerar o boleto\n");
-        for (Cliente cliente : clienteArrayList) {
-            if (cliente.getPlanType() == 1) {
-                stringBuilder.append(cliente.toString());
-                stringBuilder.append("\n-------------------------------\n");
-            }
-        }
-        if (!listAllUsers(clienteArrayList).equals(isListAllUserEmpty())) {
-            String numero = showSimpleInput(stringBuilder.toString());
-            for (Cliente cliente : clienteArrayList) {
-                if (cliente.getCellphoneNumber().equals(numero)) {
-                    int minutos = cliente.getCreditQuantityOrSeconds();
-                    float valorBoleto = minutos * 1.57f;
-                    showMessage("Valor do boleto = R$" + valorBoleto);
+    private static void reportMethod(Swing swing, ArrayList<Cliente> clienteArrayList, Ligacoes ligacoes) {
+        boolean sair = false;
+        do {
+            int choosedOption = showOptionMenu(swing.getReportMenu());
+            switch (choosedOption) {
+                case 0: //List users
+                    showMessage(listAllUsers(clienteArrayList));
                     break;
-                }
+                case 1: // List null or negative credits
+                    listNegativeNullCredits(clienteArrayList);
+                    break;
+                case 2: // Biggest credit user
+                    listMostCredit(clienteArrayList);
+                    break;
+                case 3: // Generate billets
+                    generateBills(ligacoes);
+                    break;
+                case 4:
+                    sair = true;
             }
-        }else showMessage("Não há clientes cadastrados.");
+        } while (!sair);
+    }
+
+    private static void generateBills(Ligacoes ligacoes) {
+        StringBuilder string = new StringBuilder();
+        for (Ligacoes ligacoes1 : ligacoes.getLigacoesArray()) {
+            string.append(ligacoes1.toString()).append("\n----------------------------------------------------------\n");
+        }
+        showMessage(string.toString());
     }
 
     private static void listMostCredit(ArrayList<Cliente> clienteArrayList) {
         String string = "Não há cliente pré pago cadastrado.\n";
+        int lastCredito = 0;
         for (Cliente cliente : clienteArrayList) {
-            for (Cliente cliente1 : clienteArrayList) {
-                if (cliente.getPlanType() == 0 && cliente1.getPlanType() == 0 &&
-                        cliente.getCreditQuantityOrSeconds() >= cliente1.getCreditQuantityOrSeconds()) {
-                    string = "Cliente com maior crédito\n\n" + cliente.toString();
-                }
+            int newCredito = cliente.getCreditQuantityOrSeconds();
+            if (isPrePago(cliente.getPlanType())
+                    && newCredito >= lastCredito) {
+                string = "Cliente com maior crédito\n\n" + cliente.toString();
+                lastCredito = newCredito;
             }
         }
-        showMessage(string);
+        if (lastCredito > 0) {
+            showMessage(string);
+        } else showMessage("Não há cliente com crédito positivo.");
     }
 
     private static void listNegativeNullCredits(ArrayList<Cliente> clienteArrayList) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Clientes sem créditos ou negativado.\n\n");
+        String msg = "Clientes sem créditos ou negativado.\n\n";
+        stringBuilder.append(msg);
         for (Cliente cliente : clienteArrayList) {
-            if (cliente.getPlanType() == 0 && cliente.getCreditQuantityOrSeconds() <= 0)
+            if (isPrePago(cliente.getPlanType())
+                    && cliente.getCreditQuantityOrSeconds() <= 0)
                 stringBuilder.append(cliente.toString()).append("\n-----------------------------------------------\n");
         }
-        showMessage(stringBuilder.toString());
+        if (!stringBuilder.toString().equals(msg)) {
+            showMessage(stringBuilder.toString());
+        } else showMessage("Não há clientes sem créditos ou negativado.");
     }
 
     private static String isListAllUserEmpty() {
@@ -230,21 +226,17 @@ public class Main {
     }
 
     private static String listAllUsers(ArrayList<Cliente> clienteArrayList) {
-        StringBuilder stringBuilder = null;
+        StringBuilder stringBuilder = new StringBuilder();
         for (Cliente cliente : clienteArrayList) {
             stringBuilder.append(cliente.toString()).append("\n-----------------------------------------------\n");
         }
-        if (stringBuilder != null) {
+        if (!stringBuilder.toString().equals("")) {
             return (stringBuilder.toString());
         } else return isListAllUserEmpty();
     }
 
     private static void addToClienteArray(ArrayList<Cliente> clienteArrayList, String numero, String nome, int creditoOUminuto, int plano) {
         clienteArrayList.add(new Cliente(numero, nome, creditoOUminuto, plano));
-    }
-
-    private static void addToLigacoesArray(ArrayList<Ligacoes> ligacoesArrayList, String nome, String numero, String dataInicio, String dataFim) {
-        ligacoesArrayList.add(new Ligacoes(nome, numero, dataInicio, dataFim));
     }
 
     private static void clearSwing(JTextField[] field) {
@@ -260,6 +252,10 @@ public class Main {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    private static boolean isCreditoValido(String credito) {
+        return Integer.parseInt(credito) >= 0;
     }
 
     private static void showMessage(String s) {

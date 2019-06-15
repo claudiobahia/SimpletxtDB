@@ -3,33 +3,26 @@ package sample;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Formatter;
+import java.util.Date;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Ligacoes {
-    private Formatter formatter;
     private Scanner scanner;
-    private String nome;
     private String numero;
     private String dataInicio;
     private String dataFim;
+    private ArrayList<Ligacoes> ligacoesArrayList;
 
-    public Ligacoes(String nome, String numero, String dataInicio, String dataFim) {
-        this.nome = nome;
+    public Ligacoes(String numero, String dataInicio, String dataFim) {
         this.numero = numero;
         this.dataInicio = dataInicio;
         this.dataFim = dataFim;
     }
 
     public Ligacoes() {
-    }
-
-    public void writeTxt(ArrayList<Ligacoes> ligacoes) {
-        formatter = createFileToWrite(formatter);
-        for (Ligacoes ligacoes1 : ligacoes) {
-            formatter.format("%s;%s;%s;%s\n", ligacoes1.getNome(), ligacoes1.getNumero(), ligacoes1.getDataInicio(), ligacoes1.getDataFim());
-        }
-        close(formatter);
+        this.ligacoesArrayList = new ArrayList<>();
+        ligacoesArrayList = readFile(ligacoesArrayList);
     }
 
     public ArrayList<Ligacoes> readFile(ArrayList<Ligacoes> ligacoes) {
@@ -37,15 +30,41 @@ public class Ligacoes {
         if (isFile()) {
             scanner = openFileToRead(scanner);
         }
-        if (scanner != null) {
-            addTxtToLigacoesArrayList(ligacoes, scanner);
-        } else {
-            formatter = createFileToWrite(formatter);
-            scanner = openFileToRead(scanner);
-            addTxtToLigacoesArrayList(ligacoes, scanner);
-        }
+        addTxtToLigacoesArrayList(ligacoes, scanner);
+
         close(scanner);
         return ligacoes;
+    }
+
+    @Override
+    public String toString() {
+        return "Número: " + getNumero() + "\n" +
+                "Hora da inicio da chamada: " + getDataInicio() + "\n" +
+                "Hora de termino da chamada: " + getDataFim() + "\n" +
+                "Minutos falados:" + getMinuteFromDateDiference() + "\n" +
+                "Crédito Pre-Pago " + getValorPrePago() + "\n" +
+                "Valor para Pós-Pago: " + getValorPosPago();
+    }
+
+    private String getValorPosPago() {
+        if (getMinuteFromDateDiference() <= 0) {
+            return 1 + " real";
+        } else return getMinuteFromDateDiference() * 1.27f + " reais";
+    }
+
+    private long getMinuteFromDateDiference() {
+        Data data = new Data();
+        Date dateInicio = data.stringToDate(getDataInicio());
+        Date dateFim = data.stringToDate(getDataFim());
+        return (dateFim.getTime() - dateInicio.getTime()) / (60 * 1000) % 60;
+    }
+
+    private String getValorPrePago() {
+        Random random = new Random();
+        double d = random.nextInt(50);
+        if (getMinuteFromDateDiference() >= 0) {
+            return "inicial: " + d + "    crédito final: " + (d - 1);
+        } else return "inicial: " + d + "    crédito final: " + (d - getMinuteFromDateDiference());
     }
 
     private void addTxtToLigacoesArrayList(ArrayList<Ligacoes> ligacoes, Scanner scanner) {
@@ -54,16 +73,8 @@ public class Ligacoes {
         while (scanner.hasNext()) {
             linha = scanner.nextLine();
             stringVet = linha.split(";");
-            Ligacoes ligacoes1 = new Ligacoes(stringVet[0], stringVet[1], stringVet[2], stringVet[3]);
+            Ligacoes ligacoes1 = new Ligacoes(stringVet[0], stringVet[1], stringVet[2]);
             ligacoes.add(ligacoes1);
-        }
-    }
-
-    private void close(Formatter formatter) {
-        try {
-            formatter.close();
-        } catch (NullPointerException e) {
-            e.printStackTrace();
         }
     }
 
@@ -73,16 +84,6 @@ public class Ligacoes {
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
-    }
-
-    private Formatter createFileToWrite(Formatter formatter) {
-        formatter = null;
-        try {
-            formatter = new Formatter(new File("ligacoes.txt"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return formatter;
     }
 
     private boolean isFile() {
@@ -95,45 +96,27 @@ public class Ligacoes {
     }
 
     private Scanner openFileToRead(Scanner scanner) {
-        if (isFile()) {
-            try {
-                scanner = new Scanner(new File("ligacoes.txt"));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        } else createFileToWrite(formatter);
+        try {
+            scanner = new Scanner(new File("ligacoes.txt"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         return scanner;
     }
 
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getNumero() {
+    private String getNumero() {
         return numero;
     }
 
-    public void setNumero(String numero) {
-        this.numero = numero;
-    }
-
-    public String getDataInicio() {
+    private String getDataInicio() {
         return dataInicio;
     }
 
-    public void setDataInicio(String dataInicio) {
-        this.dataInicio = dataInicio;
-    }
-
-    public String getDataFim() {
+    private String getDataFim() {
         return dataFim;
     }
 
-    public void setDataFim(String dataFim) {
-        this.dataFim = dataFim;
+    public ArrayList<Ligacoes> getLigacoesArray() {
+        return ligacoesArrayList;
     }
 }

@@ -24,8 +24,8 @@ public class Swing {
         this.planTypeButtons = new Object[]{"Pré-Pago", "Pós-Pago"};
         this.includeObjNameNumber = new Object[]{"Entre com o nome do cliente:", getNameTxt(), "Entre com o número telefonico:\nNúmeros apenas.", getNumberTxt()};
         this.creditObj = new Object[]{"Entre com os créditos:", getCreditMinuteTxt()};
-        this.mainMenu = new Object[]{"Incluir", "Alterar", "Excluir", "Relatório", "Fazer ligação", "Sair"};
-        this.reportMenu = new Object[]{"Listar clientes", "Listar créditos nulos ou negativos", "Cliente com maior crédito", "Gerar boletos para pós pagos.", "Voltar"};
+        this.mainMenu = new Object[]{"Incluir", "Alterar", "Excluir", "Relatório", "Sair"};
+        this.reportMenu = new Object[]{"Listar clientes", "Listar créditos nulos ou negativos", "Cliente com maior crédito", "Gerar boletos", "Voltar"};
     }
 
     public JTextField getNameTxt() {

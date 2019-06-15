@@ -6,7 +6,6 @@ public class Cliente {
     private int planType;//0 prepago
     private int creditQuantityOrSeconds;
 
-
     public Cliente(String cellphoneNumber, String userName, int creditQuantityOrSeconds, int planType) {
         this.cellphoneNumber = cellphoneNumber;
         this.userName = userName;
