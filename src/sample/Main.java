@@ -6,13 +6,15 @@ import java.util.ArrayList;
 public class Main {
     public static void main(String[] args) {
 
-        DAO dao = new DAO();
-        Ligacoes ligacoes = new Ligacoes();
+        DAOcliente daoCliente = new DAOcliente();
+        DAOligacao daoLigacao = new DAOligacao();
         Swing swing = new Swing();
 
+        ArrayList<Ligacoes> ligacoesArrayList = new ArrayList<>();
         ArrayList<Cliente> clienteArrayList = new ArrayList<>();
 
-        clienteArrayList = dao.readFile(clienteArrayList);
+        ligacoesArrayList = daoLigacao.readFileLigacao(ligacoesArrayList);
+        clienteArrayList = daoCliente.readFileCliente(clienteArrayList);
 
         boolean sair = false;
         do {
@@ -29,13 +31,13 @@ public class Main {
                     excludeMethod(clienteArrayList);
                     break;
                 case 3://Report info from user
-                    reportMethod(swing, clienteArrayList, ligacoes);
+                    reportMethod(swing, clienteArrayList, ligacoesArrayList);
                     break;
                 case 4://Make a call
                 case -1://Exit X
                     sair = true;
             }
-            dao.writeTxt(clienteArrayList);
+            daoCliente.writeTxtCliente(clienteArrayList);
         } while (!sair);
     }
 
@@ -160,7 +162,7 @@ public class Main {
         clienteArrayList.remove(cliente);
     }
 
-    private static void reportMethod(Swing swing, ArrayList<Cliente> clienteArrayList, Ligacoes ligacoes) {
+    private static void reportMethod(Swing swing, ArrayList<Cliente> clienteArrayList, ArrayList<Ligacoes> ligacoesArrayList) {
         boolean sair = false;
         do {
             int choosedOption = showOptionMenu(swing.getReportMenu());
@@ -175,7 +177,7 @@ public class Main {
                     listMostCredit(clienteArrayList);
                     break;
                 case 3: // Generate billets
-                    generateBills(ligacoes);
+                    generateBills(clienteArrayList,ligacoesArrayList);
                     break;
                 case 4:
                     sair = true;
@@ -183,12 +185,25 @@ public class Main {
         } while (!sair);
     }
 
-    private static void generateBills(Ligacoes ligacoes) {
-        StringBuilder string = new StringBuilder();
-        for (Ligacoes ligacoes1 : ligacoes.getLigacoesArray()) {
-            string.append(ligacoes1.toString()).append("\n----------------------------------------------------------\n");
+    private static void generateBills(ArrayList<Cliente> clienteArrayList,ArrayList<Ligacoes> ligacoesArrayList) {
+
+        StringBuilder s = new StringBuilder();
+        for (Cliente cliente : clienteArrayList){
+            for (Ligacoes ligacoes : ligacoesArrayList){
+                if (ligacoes.getNumero().equals(cliente.getCellphoneNumber())){
+                    s.append("Nome: ").append(cliente.getUserName()).
+                            append("\n").append(ligacoes.toString());
+                    if (isPrePago(cliente.getPlanType())){
+                        s.append("Plano Pré Pago\n").append(ligacoes.getValorPrePago(cliente.getCreditQuantityOrSeconds()+""));
+                        cliente.setCreditQuantityOrSeconds(cliente.getCreditQuantityOrSeconds()-Integer.parseInt(Long.toString(ligacoes.getMinuteFromDateDiference())));
+                    }else{
+                        s.append("Plano Pós Pago\n").append(ligacoes.getValorPosPago(cliente.getCreditQuantityOrSeconds()+""));
+                    }
+                    s.append("\n--------------------------------------------------------------------\n");
+                }
+            }
         }
-        showMessage(string.toString());
+        showMessage(s.toString());
     }
 
     private static void listMostCredit(ArrayList<Cliente> clienteArrayList) {

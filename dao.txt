@@ -1,3 +1,4 @@
 12345678;Claudio Alt;-9;0
 21212121;Rafael;5;1
-15951236;Guilherme;40;0
+15951236;Guilherme;31;0
+66666666;Simio;10;0

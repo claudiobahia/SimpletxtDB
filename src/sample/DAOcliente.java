@@ -6,35 +6,64 @@ import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.Scanner;
 
-public class DAO {
+public class DAOcliente {
     private Formatter formatter;
     private Scanner scanner;
 
-    public DAO() {
+    public DAOcliente() {
     }
 
-    public void writeTxt(ArrayList<Cliente> clientes) {
-        formatter = createFileToWrite(formatter);
-        for (Cliente cliente : clientes) {
-            formatter.format("%s;%s;%d;%d\n", cliente.getCellphoneNumber(), cliente.getUserName(), cliente.getCreditQuantityOrSeconds(), cliente.getPlanType());
-        }
-        close(formatter);
-    }
-
-    public ArrayList<Cliente> readFile(ArrayList<Cliente> clientes) {
-
+    public ArrayList<Cliente> readFileCliente(ArrayList<Cliente> clientes) {
         if (isFile()) {
             scanner = openFileToRead(scanner);
         }
         if (scanner != null) {
             addTxtToClienteArrayList(clientes, scanner);
         } else {
-            formatter = createFileToWrite(formatter);
+            formatter = createFileToWrite();
             scanner = openFileToRead(scanner);
             addTxtToClienteArrayList(clientes, scanner);
         }
         close(scanner);
         return clientes;
+    }
+
+    private Formatter createFileToWrite() {
+        Formatter formatter = null;
+        try {
+            formatter = new Formatter(new File("dao.txt"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return formatter;
+    }
+
+    private Scanner openFileToRead(Scanner scanner) {
+        if (isFile()) {
+            try {
+                scanner = new Scanner(new File("dao.txt"));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        } else createFileToWrite();
+        return scanner;
+    }
+
+    private boolean isFile() {
+        try {
+            new Scanner(new File("dao.txt"));
+            return true;
+        } catch (FileNotFoundException e) {
+            return false;
+        }
+    }
+
+    public void writeTxtCliente(ArrayList<Cliente> clientes) {
+        formatter = createFileToWrite();
+        for (Cliente cliente : clientes) {
+            formatter.format("%s;%s;%d;%d\n", cliente.getCellphoneNumber(), cliente.getUserName(), cliente.getCreditQuantityOrSeconds(), cliente.getPlanType());
+        }
+        close(formatter);
     }
 
     private void addTxtToClienteArrayList(ArrayList<Cliente> clientes, Scanner scanner) {
@@ -65,33 +94,4 @@ public class DAO {
         }
     }
 
-    private Formatter createFileToWrite(Formatter formatter) {
-        formatter = null;
-        try {
-            formatter = new Formatter(new File("dao.txt"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return formatter;
-    }
-
-    private boolean isFile() {
-        try {
-            new Scanner(new File("dao.txt"));
-            return true;
-        } catch (FileNotFoundException e) {
-            return false;
-        }
-    }
-
-    private Scanner openFileToRead(Scanner scanner) {
-        if (isFile()) {
-            try {
-                scanner = new Scanner(new File("dao.txt"));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        } else createFileToWrite(formatter);
-        return scanner;
-    }
 }
