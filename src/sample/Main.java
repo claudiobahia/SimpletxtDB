@@ -37,8 +37,8 @@ public class Main {
                 case -1://Exit X
                     sair = true;
             }
-            daoCliente.writeTxtCliente(clienteArrayList);
         } while (!sair);
+        daoCliente.writeTxtCliente(clienteArrayList);
     }
 
     private static Cliente returnEqualCliente(ArrayList<Cliente> clienteArrayList, String numberToCheck) {
@@ -177,7 +177,7 @@ public class Main {
                     listMostCredit(clienteArrayList);
                     break;
                 case 3: // Generate billets
-                    generateBills(clienteArrayList,ligacoesArrayList);
+                    generateBills(clienteArrayList, ligacoesArrayList);
                     break;
                 case 4:
                     sair = true;
@@ -185,19 +185,19 @@ public class Main {
         } while (!sair);
     }
 
-    private static void generateBills(ArrayList<Cliente> clienteArrayList,ArrayList<Ligacoes> ligacoesArrayList) {
+    private static void generateBills(ArrayList<Cliente> clienteArrayList, ArrayList<Ligacoes> ligacoesArrayList) {
 
         StringBuilder s = new StringBuilder();
-        for (Cliente cliente : clienteArrayList){
-            for (Ligacoes ligacoes : ligacoesArrayList){
-                if (ligacoes.getNumero().equals(cliente.getCellphoneNumber())){
-                    s.append("Nome: ").append(cliente.getUserName()).
-                            append("\n").append(ligacoes.toString());
-                    if (isPrePago(cliente.getPlanType())){
-                        s.append("Plano Pré Pago\n").append(ligacoes.getValorPrePago(cliente.getCreditQuantityOrSeconds()+""));
-                        cliente.setCreditQuantityOrSeconds(cliente.getCreditQuantityOrSeconds()-Integer.parseInt(Long.toString(ligacoes.getMinuteFromDateDiference())));
-                    }else{
-                        s.append("Plano Pós Pago\n").append(ligacoes.getValorPosPago(cliente.getCreditQuantityOrSeconds()+""));
+        for (Cliente cliente : clienteArrayList) {
+            for (Ligacoes ligacoes : ligacoesArrayList) {
+                if (ligacoes.getNumero().equals(cliente.getCellphoneNumber())) {
+                    s.append("Nome: ").append(cliente.getUserName()).append("\n").append(ligacoes.toString());
+                    if (isPrePago(cliente.getPlanType())) {
+                        s.append("Plano Pré Pago\n").append(ligacoes.getValorPrePago(cliente.getCreditQuantityOrSeconds() + ""));
+                        cliente.setCreditQuantityOrSeconds(cliente.getCreditQuantityOrSeconds() - Integer.parseInt(Long.toString(ligacoes.getMinuteFromDateDiference())));
+                    } else {
+                        s.append("Plano Pós Pago\n").append(ligacoes.getValorPosPago(cliente.getCreditQuantityOrSeconds() + ""));
+                        cliente.setCreditQuantityOrSeconds(cliente.getCreditQuantityOrSeconds() + Integer.parseInt(Long.toString(ligacoes.getMinuteFromDateDiference())));
                     }
                     s.append("\n--------------------------------------------------------------------\n");
                 }

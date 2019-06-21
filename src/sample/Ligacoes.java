@@ -16,8 +16,6 @@ public class Ligacoes {
     @Override
     public String toString() {
         return "Número: " + getNumero() + "\n" +
-                "Hora da inicio da chamada: " + getDataInicio() + "\n" +
-                "Hora de termino da chamada: " + getDataFim() + "\n" +
                 "Minutos falados:" + getMinuteFromDateDiference() + "\n";
     }
 
@@ -26,7 +24,7 @@ public class Ligacoes {
             return "Minutos inicial: " + minutosInicial +
                     "\nMinutos Final: " + (Integer.parseInt(minutosInicial) + Integer.parseInt(Long.toString(getMinuteFromDateDiference()))) +
                     "\nValor do boleto: " + (getMinuteFromDateDiference() * 1.73);
-        }else return "Minutos inicial: " + minutosInicial +
+        } else return "Minutos inicial: " + minutosInicial +
                 "\nMinutos Final: " + (Integer.parseInt(minutosInicial) + 1) +
                 "\nValor do boleto: " + (1);
     }
@@ -42,7 +40,7 @@ public class Ligacoes {
         if (getMinuteFromDateDiference() > 0) {
             return "Crédito inicial: " + creditoInicial +
                     "\nCrédito Final: " + (Integer.parseInt(creditoInicial) - Integer.parseInt(Long.toString(getMinuteFromDateDiference())));
-        }else return "Crédito inicial: " + creditoInicial +
+        } else return "Crédito inicial: " + creditoInicial +
                 "\nCrédito Final: " + (Integer.parseInt(creditoInicial) - 1);
     }
 

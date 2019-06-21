@@ -11,7 +11,7 @@ public class Data {
 
 
     public Data() {
-        this.dateFormat = new SimpleDateFormat("EEE MMM dd kk:mm:ss z yyyy", Locale.ENGLISH);
+        this.dateFormat = new SimpleDateFormat("EEE MMM dd kk:mm:ss", Locale.ENGLISH);
     }
 
     public Date stringToDate(String s) {
